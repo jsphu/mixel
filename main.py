@@ -11,7 +11,7 @@ class Excel(ctk.CTk):
         # Create a frame for the table
         self.frame = ctk.CTkFrame(self)
         self.frame.pack(pady=10, padx=10, fill="both", expand=True)
-        
+
         self.cell_name_label = ctk.CTkLabel(self.tops, text="CELL NAME")
         self.cell_name_label.pack(pady=10)
 
@@ -22,13 +22,14 @@ class Excel(ctk.CTk):
         self.selected_cells = []
 
         self.cell_names = {}
-        self.list_of_alphabet =['A', 'B', 'C', 'D', 'E', 'F', 
-            'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
+        self.list_of_alphabet =['A', 'B', 'C', 'D', 'E', 'F',
+            'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
             'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-        
+
         # Create a table of Entry widgets
         self.create_table(rows=20, columns=15)
 
+        self.default_color = self.table[-1].cget("fg_color")
 
         self.bind("<Button-1>", self.display_cell_name)
         self.bind("<Left>", self.key_down_handler)
@@ -110,11 +111,11 @@ class Excel(ctk.CTk):
         for widget, name in self.cell_names.items():
             if name == cell_name and widget not in self.selected_cells:
                 self.selected_cells.append(widget)
-                widget.configure(bg_color="lightblue")  # Highlight the selected cell
+                widget.configure(fg_color="lightblue")  # Highlight the selected cell
 
     def clear_selection(self):
         for widget in self.selected_cells:
-            widget.configure(bg_color="black")  # Reset cell background
+            widget.configure(fg_color=self.default_color)  # Reset cell background
         self.selected_cells = []
 
     def key_down_handler(self, event):
