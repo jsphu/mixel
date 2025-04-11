@@ -1,6 +1,8 @@
 import tkinter as tk
 import customtkinter as ctk
 
+
+
 class Excel(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -118,15 +120,35 @@ class Excel(ctk.CTk):
             widget.configure(fg_color=self.default_color)  # Reset cell background
         self.selected_cells = []
 
+    def cell_parser(self, current):
+        cell_char = current[0]
+        cell_num = int(current[1:])
+        char_index = self.list_of_alphabet.index(cell_char)
+        return (char_index, cell_char, cell_num, )
+
+    def shift_mode(self, event, current):
+        index, cell_char, cell_num = self.cell_parser(current)
+
+        # Ensure the new cell is within bounds
+        if cell_num > 0 and cell_num <= len(self.table) - 1:
+            try:
+                if event.state & 0x0001:  # Check if Shift key is pressed
+                    self.add_to_selection(current)
+                else:
+                    self.clear_selection()
+                    self.focus_cell(current)
+            except KeyError:
+                pass
+
+    
+
     def key_down_handler(self, event):
         # Move focus based on arrow key input
         current = self.get_cell_name(event)
         if not current:
             return
-
-        cell_char = current[0]
-        cell_num = int(current[1:])
-        index = self.list_of_alphabet.index(cell_char)
+        
+        index, cell_char, cell_num = self.cell_parser(current)
 
         if event.keysym == "Down" or event.keysym == "Return":
             cell_char = self.list_of_alphabet[index]  # Stay in the same column
@@ -141,20 +163,8 @@ class Excel(ctk.CTk):
             if index < len(self.list_of_alphabet) - 1:
                 cell_char = self.list_of_alphabet[index + 1]
 
-        # Ensure the new cell is within bounds
-        if cell_num > 0 and cell_num <= len(self.table) - 1:
-            try:
-                new_cell_name = f"{cell_char}{cell_num}"
-                if event.state & 0x0001:  # Check if Shift key is pressed
-                    self.add_to_selection(new_cell_name)
-                else:
-                    self.clear_selection()
-                    self.focus_cell(new_cell_name)
-            except KeyError:
-                pass
+        self.shift_mode(event, current=f"{cell_char}{cell_num}")
         self.display_cell_name(event)
-
-
 
 if __name__ == "__main__":
     app = Excel()
